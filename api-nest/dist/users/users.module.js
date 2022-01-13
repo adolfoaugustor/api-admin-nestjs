@@ -12,11 +12,15 @@ const typeorm_1 = require("@nestjs/typeorm");
 const users_repository_1 = require("./users.repository");
 const users_service_1 = require("./users.service");
 const users_controller_1 = require("./users.controller");
+const passport_1 = require("@nestjs/passport");
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([users_repository_1.UserRepository])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([users_repository_1.UserRepository]),
+            passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
+        ],
         providers: [users_service_1.UsersService],
         controllers: [users_controller_1.UsersController],
     })

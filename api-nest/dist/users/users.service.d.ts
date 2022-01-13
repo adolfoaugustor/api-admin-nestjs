@@ -1,4 +1,4 @@
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { UserRepository } from './users.repository';
 export declare class UsersService {

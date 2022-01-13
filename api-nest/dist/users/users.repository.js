@@ -38,6 +38,16 @@ let UserRepository = class UserRepository extends typeorm_1.Repository {
             }
         }
     }
+    async checkCredentials(credentialsDto) {
+        const { email, password } = credentialsDto;
+        const user = await this.findOne({ email, status: true });
+        if (user && (await user.checkPassword(password))) {
+            return user;
+        }
+        else {
+            return null;
+        }
+    }
     async hashPassword(password, salt) {
         return bcrypt.hash(password, salt);
     }

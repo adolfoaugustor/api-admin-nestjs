@@ -11,4 +11,5 @@ export declare class User extends BaseEntity {
     recoverToken: string;
     createdAt: Date;
     updatedAt: Date;
+    checkPassword(password: string): Promise<boolean>;
 }
