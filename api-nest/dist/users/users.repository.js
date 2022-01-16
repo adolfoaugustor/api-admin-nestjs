@@ -13,6 +13,29 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const common_1 = require("@nestjs/common");
 let UserRepository = class UserRepository extends typeorm_1.Repository {
+    async findUsers(queryDto) {
+        queryDto.status = queryDto.status === undefined ? true : queryDto.status;
+        queryDto.page = queryDto.page < 1 ? 1 : queryDto.page;
+        queryDto.limit = queryDto.limit > 100 ? 100 : queryDto.limit;
+        const { email, name, status, role } = queryDto;
+        const query = this.createQueryBuilder('user');
+        query.where('user.status = :status', { status });
+        if (email) {
+            query.andWhere('user.email ILIKE :email', { email: `%${email}%` });
+        }
+        if (name) {
+            query.andWhere('user.name ILIKE :name', { name: `%${name}%` });
+        }
+        if (role) {
+            query.andWhere('user.role = :role', { role });
+        }
+        query.skip((queryDto.page - 1) * queryDto.limit);
+        query.take(+queryDto.limit);
+        query.orderBy(queryDto.sort ? JSON.parse(queryDto.sort) : undefined);
+        query.select(['user.name', 'user.email', 'user.role', 'user.status']);
+        const [users, total] = await query.getManyAndCount();
+        return { users, total };
+    }
     async createUser(createUserDto, role) {
         const { email, name, password } = createUserDto;
         const user = this.create();

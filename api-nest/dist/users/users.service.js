@@ -29,6 +29,39 @@ let UsersService = class UsersService {
             return this.userRepository.createUser(createUserDto, user_roles_enum_1.UserRole.ADMIN);
         }
     }
+    async findUserById(userId) {
+        const user = await this.userRepository.findOne(userId, {
+            select: ['email', 'name', 'role', 'id'],
+        });
+        if (!user)
+            throw new common_1.NotFoundException('Usuário não encontrado');
+        return user;
+    }
+    async updateUser(updateUserDto, id) {
+        const user = await this.findUserById(id);
+        const { name, email, role, status } = updateUserDto;
+        user.name = name ? name : user.name;
+        user.email = email ? email : user.email;
+        user.role = role ? role : user.role;
+        user.status = status === undefined ? user.status : status;
+        try {
+            await user.save();
+            return user;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Erro ao salvar os dados no banco de dados');
+        }
+    }
+    async deleteUser(userId) {
+        const result = await this.userRepository.delete({ id: userId });
+        if (result.affected === 0) {
+            throw new common_1.NotFoundException('Não foi encontrado um usuário com o ID informado');
+        }
+    }
+    async findUsers(queryDto) {
+        const users = await this.userRepository.findUsers(queryDto);
+        return users;
+    }
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
