@@ -12,13 +12,27 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_config_1 = require("./configs/typeorm.config");
 const auth_module_1 = require("./auth/auth.module");
 const users_module_1 = require("./users/users.module");
+const nest_winston_1 = require("nest-winston");
+const wiston_configs_1 = require("./configs/wiston.configs");
+const core_1 = require("@nestjs/core");
+const logger_interceptor_1 = require("./interceptors/logger.interceptor");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forRoot(typeorm_config_1.typeOrmConfig), auth_module_1.AuthModule, users_module_1.UsersModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forRoot(typeorm_config_1.typeOrmConfig),
+            nest_winston_1.WinstonModule.forRoot(wiston_configs_1.winstonConfig),
+            auth_module_1.AuthModule,
+            users_module_1.UsersModule
+        ],
         controllers: [],
-        providers: [],
+        providers: [
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: logger_interceptor_1.LoggerInterceptor,
+            },
+        ],
     })
 ], AppModule);
 exports.AppModule = AppModule;
